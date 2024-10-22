@@ -1,47 +1,77 @@
 {
-  "name": "run-button",
-  "displayName": "Run Button",
-  "description": "A compact Start/Stop/Restart button in the editor title bar.",
-  "version": "1.0.2",
-  "publisher": "karlsander",
+  "name": "run-buttons",
+  "displayName": "Run Buttons",
+  "description": "A compact Select/Debug/Stop/Restart button in the editor title bar base on karlsander.run-button. ",
+  "version": "1.0.0",
+  "publisher": "dinfeo",
   "engines": {
     "vscode": "^1.57.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onCommand:run-button.debug",
-    "onCommand:run-button.restart",
-    "onCommand:run-button.stop"
-  ],
   "main": "./dist/extension.js",
   "icon": "icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/karlsander/run-button"
+    "url": "https://github.com/dinfeo/run-button"
   },
   "contributes": {
+    "submenus": [
+      {
+        "id": "run-button/debug",
+        "label": "run-button",
+        "icon": "$(debug-alt)"
+      }
+    ],
     "menus": {
-      "editor/title": [
+      "editor/title/run": [
+        {
+          "command": "run-button.select",
+          "group": "run-button",
+          "when": "activeEditor == workbench.editors.files.textFileEditor && debuggersAvailable && !inDebugMode && config.run-button.isInRunGroup"
+        },
         {
           "command": "run-button.debug",
-          "group": "navigation",
-          "when": "activeEditor == workbench.editors.files.textFileEditor && debuggersAvailable && !inDebugMode"
+          "group": "run-button@1",
+          "when": "activeEditor == workbench.editors.files.textFileEditor && debuggersAvailable && !inDebugMode && config.run-button.isInRunGroup"
+        }
+      ],
+      "editor/title": [
+        {
+          "submenu": "run-button/debug",
+          "group": "navigation"
+        }
+      ],
+      "run-button/debug": [
+        {
+          "command": "run-button.select",
+          "group": "run-button",
+          "when": "activeEditor == workbench.editors.files.textFileEditor && debuggersAvailable && !inDebugMode && !config.run-button.isInRunGroup"
+        },
+        {
+          "command": "run-button.debug",
+          "group": "run-button@1",
+          "when": "activeEditor == workbench.editors.files.textFileEditor && debuggersAvailable && !inDebugMode && !config.run-button.isInRunGroup"
         },
         {
           "command": "run-button.restart",
-          "group": "navigation",
+          "group": "run-button@2",
           "when": "activeEditor == workbench.editors.files.textFileEditor && inDebugMode && config.run-button.actionWhileRunning == restart"
         },
         {
           "command": "run-button.stop",
-          "group": "navigation",
+          "group": "run-button@2",
           "when": "activeEditor == workbench.editors.files.textFileEditor && inDebugMode && config.run-button.actionWhileRunning == stop"
         }
       ]
     },
     "commands": [
+      {
+        "command": "run-button.select",
+        "title": "Select and Start Debugging",
+        "icon": "$(debug-alt)"
+      },
       {
         "command": "run-button.debug",
         "title": "Start Debugging",
@@ -61,6 +91,11 @@
     "configuration": {
       "title": "Run Button",
       "properties": {
+        "run-button.isInRunGroup": {
+          "type": "boolean",
+          "default": "true",
+          "description": "Run Options is in editor title run group"
+        },
         "run-button.actionWhileRunning": {
           "type": "string",
           "default": "restart",
@@ -77,7 +112,7 @@
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map"
+    "package": "SET NODE_OPTIONS=--openssl-legacy-provider && webpack --mode production --devtool hidden-source-map"
   },
   "devDependencies": {
     "@types/vscode": "^1.57.0",
@@ -88,10 +123,5 @@
     "ts-loader": "^9.2.2",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0"
-  },
-  "__metadata": {
-    "id": "e7b86d37-2ba0-43e3-8851-1460f9db71c2",
-    "publisherDisplayName": "Karl Sander",
-    "publisherId": "c5620e9b-4ce9-4599-989e-cb4dea4ad5fb"
   }
 }
